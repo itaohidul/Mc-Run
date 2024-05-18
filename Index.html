@@ -3,46 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Run Mario Game</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
-        canvas {
-            display: block;
-            background: #87CEEB;
-        }
-        #gameOver, #levelComplete, #comingSoon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            text-align: center;
-        }
-        #gameOver button, #levelComplete button, #comingSoon button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-        }
-    </style>
+    <title>Mario Runner Game</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
-    <div id="gameOver">
-        <h1>Game Over</h1>
-        <button onclick="restartGame()">Restart</button>
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div class="ui">
+            <div class="daily-login">
+                <h2>Daily Login Bonus</h2>
+                <button id="claimBonus">Claim Daily Bonus</button>
+                <div id="bonusMessage"></div>
+            </div>
+            <div class="spinning-wheel">
+                <h2>Spin Wheel</h2>
+                <button id="spinWheel">Spin</button>
+                <div id="spinResult"></div>
+            </div>
+            <div class="quests">
+                <h2>Quests</h2>
+                <p>Complete Quests: <span class="coming-soon">Coming Soon</span></p>
+            </div>
+            <div class="locked">
+                <button class="locked-button">Coming Soon</button>
+            </div>
+        </div>
     </div>
-    <div id="levelComplete">
-        <h1>Level Complete</h1>
-        <button onclick="startNextLevel()">Next Level</button>
-    </div>
-    <div id="comingSoon">
-        <h1>Coming Soon</h1>
-        <button onclick="restartGame()">Restart</button>
-    </div>
-    <script src="game.js"></script>
+    <script src="scripts.js"></script>
 </body>
-</html> 
+</html>
