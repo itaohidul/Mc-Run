@@ -1,124 +1,77 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+canvas.width = 800;
+canvas.height = 400;
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+let gameSpeed = 5;
+let gravity = 1;
 
-const mario = new Image();
-mario.src = 'mario.png'; // Ensure you have a mario.png image in your project directory
+let player = {
+    x: 50,
+    y: 150,
+    width: 50,
+    height: 50,
+    speed: 0,
+    jumpPower: -15,
+    isJumping: false
+};
 
-const coin = new Image();
-coin.src = 'coin.png'; // Ensure you have a coin.png image in your project directory
+let ground = {
+    x: 0,
+    y: canvas.height - 50,
+    width: canvas.width,
+    height: 50
+};
 
-const marioWidth = 50;
-const marioHeight = 50;
-let marioX = 50;
-let marioY = canvas.height - marioHeight - 50;
-let isJumping = false;
-let jumpHeight = 0;
-const maxJumpHeight = 100;
-const gravity = 5;
-let coins = [];
-let score = 0;
-let level = 1;
-
-document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && !isJumping) {
-        isJumping = true;
-    }
-});
-
-function generateCoins() {
-    for (let i = 0; i < 10; i++) {
-        coins.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * (canvas.height - marioHeight - 50)
-        });
-    }
-}
-
-function drawMario() {
-    if (isJumping) {
-        marioY -= gravity;
-        jumpHeight += gravity;
-        if (jumpHeight >= maxJumpHeight) {
-            isJumping = false;
-        }
-    } else if (jumpHeight > 0) {
-        marioY += gravity;
-        jumpHeight -= gravity;
-    } else {
-        marioY = canvas.height - marioHeight - 50;
-    }
-
-    ctx.drawImage(mario, marioX, marioY, marioWidth, marioHeight);
-}
-
-function drawCoins() {
-    coins.forEach((coin, index) => {
-        ctx.drawImage(coin, coin.x, coin.y, 30, 30);
-        if (marioX < coin.x + 30 && marioX + marioWidth > coin.x &&
-            marioY < coin.y + 30 && marioY + marioHeight > coin.y) {
-            coins.splice(index, 1);
-            score += 10;
-        }
-    });
-}
-
-function checkLevelCompletion() {
-    if (coins.length === 0) {
-        if (level === 1) {
-            document.getElementById('levelComplete').style.display = 'block';
-        } else {
-            document.getElementById('comingSoon').style.display = 'block';
-        }
-        cancelAnimationFrame(gameLoopId);
-    }
-}
-
-function restartGame() {
-    document.getElementById('gameOver').style.display = 'none';
-    document.getElementById('comingSoon').style.display = 'none';
-    document.getElementById('levelComplete').style.display = 'none';
-    marioX = 50;
-    marioY = canvas.height - marioHeight - 50;
-    isJumping = false;
-    jumpHeight = 0;
-    score = 0;
-    coins = [];
-    level = 1;
-    generateCoins();
-    gameLoop();
-}
-
-function startNextLevel() {
-    document.getElementById('levelComplete').style.display = 'none';
-    marioX = 50;
-    marioY = canvas.height - marioHeight - 50;
-    isJumping = false;
-    jumpHeight = 0;
-    coins = [];
-    level = 2; // Example: Setting to the next level
-    generateCoins();
-    gameLoop();
-}
+let obstacles = [];
 
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    player.speed += gravity;
+    player.y += player.speed;
 
-    drawMario();
-    drawCoins();
-    checkLevelCompletion();
+    if (player.y + player.height > ground.y) {
+        player.y = ground.y - player.height;
+        player.isJumping = false;
+    }
 
-    ctx.font = '20px Arial';
-    ctx.fillStyle = 'black';
-    ctx.fillText(`Score: ${score}`, 10, 30);
+    ctx.fillStyle = 'green';
+    ctx.fillRect(ground.x, ground.y, ground.width, ground.height);
 
-    gameLoopId = requestAnimationFrame(gameLoop);
+    ctx.fillStyle = 'red';
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+
+    requestAnimationFrame(gameLoop);
 }
 
-let gameLoopId;
-mario.onload = () => {
-    generateCoins();
-    gameLoop();
-}; 
+canvas.addEventListener('click', () => {
+    if (!player.isJumping) {
+        player.speed = player.jumpPower;
+        player.isJumping = true;
+    }
+});
+
+gameLoop();
+
+// Daily Login Bonus Logic
+let lastLogin = localStorage.getItem('lastLogin');
+let loginStreak = localStorage.getItem('loginStreak') || 0;
+let today = new Date().toDateString();
+
+if (lastLogin !== today) {
+    loginStreak++;
+    localStorage.setItem('lastLogin', today);
+    localStorage.setItem('loginStreak', loginStreak);
+}
+
+document.getElementById('claimBonus').addEventListener('click', () => {
+    let bonus = Math.min(loginStreak * 50, 500);
+    document.getElementById('bonusMessage').innerText = `You claimed ${bonus} coins!`;
+});
+
+// Spin Wheel Logic
+document.getElementById('spinWheel').addEventListener('click', () => {
+    let result = Math.floor(Math.random() * 101);
+    document.getElementById('spinResult').innerText = `You won ${result} coins!`;
+}); 
