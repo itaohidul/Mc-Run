@@ -1,51 +1,123 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #87CEEB;
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = 800;
+canvas.height = 400;
+
+const gravity = 1.5;
+let gameSpeed = 5;
+let score = 0;
+let highScore = 0;
+
+const player = {
+    x: 50,
+    y: 150,
+    width: 50,
+    height: 50,
+    speedY: 0,
+    jumpPower: -15,
+    isJumping: false,
+};
+
+const ground = {
+    x: 0,
+    y: canvas.height - 50,
+    width: canvas.width,
+    height: 50,
+};
+
+let obstacles = [];
+const obstacleWidth = 50;
+const obstacleMinHeight = 50;
+const obstacleMaxHeight = 200;
+
+let frame = 0;
+const obstacleFrequency = 90;
+
+function drawPlayer() {
+    ctx.fillStyle = 'red';
+    ctx.fillRect(player.x, player.y, player.width, player.height);
 }
 
-.game-container {
-    position: relative;
+function drawGround() {
+    ctx.fillStyle = 'green';
+    ctx.fillRect(ground.x, ground.y, ground.width, ground.height);
 }
 
-canvas {
-    display: block;
-    background-color: #ffffff;
+function updatePlayer() {
+    player.speedY += gravity;
+    player.y += player.speedY;
+
+    if (player.y + player.height > ground.y) {
+        player.y = ground.y - player.height;
+        player.isJumping = false;
+    }
 }
 
-.ui {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    display: flex;
-    justify-content: space-around;
+function handleObstacles() {
+    if (frame % obstacleFrequency === 0) {
+        let height = Math.floor(Math.random() * (obstacleMaxHeight - obstacleMinHeight + 1) + obstacleMinHeight);
+        obstacles.push({ x: canvas.width, y: ground.y - height, width: obstacleWidth, height: height });
+    }
+
+    for (let i = 0; i < obstacles.length; i++) {
+        obstacles[i].x -= gameSpeed;
+
+        if (obstacles[i].x + obstacles[i].width < 0) {
+            obstacles.splice(i, 1);
+            score++;
+            if (score > highScore) {
+                highScore = score;
+            }
+        }
+
+        ctx.fillStyle = 'black';
+        ctx.fillRect(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height);
+
+        if (player.x < obstacles[i].x + obstacles[i].width &&
+            player.x + player.width > obstacles[i].x &&
+            player.y < obstacles[i].y + obstacles[i].height &&
+            player.y + player.height > obstacles[i].y) {
+            // Collision detected
+            resetGame();
+        }
+    }
 }
 
-.ui div {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 10px;
-    border-radius: 5px;
+function resetGame() {
+    player.y = ground.y - player.height;
+    player.speedY = 0;
+    player.isJumping = false;
+    obstacles = [];
+    score = 0;
+    frame = 0;
 }
 
-.ui h2 {
-    margin: 0;
-    font-size: 16px;
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    updatePlayer();
+    drawGround();
+    drawPlayer();
+    handleObstacles();
+
+    ctx.fillStyle = 'black';
+    ctx.font = '20px Arial';
+    ctx.fillText('Score: ' + score, 10, 30);
+    ctx.fillText('High Score: ' + highScore, 10, 60);
+
+    frame++;
+    requestAnimationFrame(gameLoop);
 }
 
-.coming-soon {
-    color: red;
-}
+canvas.addEventListener('click', () => {
+    if (!player.isJumping) {
+        player.speedY = player.jumpPower;
+        player.isJumping = true;
+    }
+});
 
-.locked-button {
-    padding: 10px;
-    background-color: gray;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: not-allowed;
-} 
+gameLoop();
+
+// Daily Login Bonus Logic
+let lastLogin = localStorage.getItem('lastLogin');
+let loginStreak = 
