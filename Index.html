@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run Mario Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            display: block;
+            background: #87CEEB;
+        }
+        #gameOver, #levelComplete, #comingSoon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            text-align: center;
+        }
+        #gameOver button, #levelComplete button, #comingSoon button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="gameOver">
+        <h1>Game Over</h1>
+        <button onclick="restartGame()">Restart</button>
+    </div>
+    <div id="levelComplete">
+        <h1>Level Complete</h1>
+        <button onclick="startNextLevel()">Next Level</button>
+    </div>
+    <div id="comingSoon">
+        <h1>Coming Soon</h1>
+        <button onclick="restartGame()">Restart</button>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html> 
